@@ -15,6 +15,12 @@
 from __future__ import absolute_import
 
 # import apis into sdk package
+from fabric.credmgr.swagger_client.api.default_api import DefaultApi
 from fabric.credmgr.swagger_client.api.tokens_api import TokensApi
 # import ApiClient
+from fabric.credmgr.swagger_client.api_client import ApiClient
+from fabric.credmgr.swagger_client.configuration import Configuration
 # import models into sdk package
+from fabric.credmgr.swagger_client.models.request import Request
+from fabric.credmgr.swagger_client.models.success import Success
+from fabric.credmgr.swagger_client.models.version import Version

@@ -17,9 +17,9 @@ Python 2.7 and 3.4+
 If the python package is hosted on Github, you can install directly from Github
 
 ```sh
-pip install git+https://github.com/GIT_USER_ID/GIT_REPO_ID.git
+pip install git+https://github.com/fabric-testbed/fabric_credmgr.git
 ```
-(you may need to run `pip` with root permission: `sudo pip install git+https://github.com/GIT_USER_ID/GIT_REPO_ID.git`)
+(you may need to run `pip` with root permission: `sudo pip install git+https://github.com/fabric-testbed/fabric_credmgr.git`)
 
 Then import the package:
 ```python
@@ -47,12 +47,12 @@ Please follow the [installation procedure](#installation--usage) and then run th
 ```python
 from __future__ import print_function
 import time
-import swagger_client
+import fabric.credmgr.swagger_client
 from fabric.credmgr.swagger_client.rest import ApiException
 from pprint import pprint
 
 # create an instance of the API class
-api_instance = swagger_client.DefaultApi(swagger_client.ApiClient(configuration))
+api_instance = fabric.credmgr.swagger_client.DefaultApi(fabric.credmgr.swagger_client.ApiClient(configuration))
 
 try:
     # version

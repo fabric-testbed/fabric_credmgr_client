@@ -17,12 +17,12 @@ Version
 ```python
 from __future__ import print_function
 import time
-from fabric.credmgr import swagger_client
+import fabric.credmgr.swagger_client
 from fabric.credmgr.swagger_client.rest import ApiException
 from pprint import pprint
 
 # create an instance of the API class
-api_instance = swagger_client.DefaultApi()
+api_instance = fabric.credmgr.swagger_client.DefaultApi()
 
 try:
     # version

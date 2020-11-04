@@ -20,7 +20,7 @@ Request to generate tokens for an user
 from __future__ import print_function
 import time
 import swagger_client
-from fabric.credmgr.swagger_client.rest import ApiException
+from swagger_client.rest import ApiException
 from pprint import pprint
 
 # create an instance of the API class
@@ -70,7 +70,7 @@ Request to refresh OAuth tokens for an user
 from __future__ import print_function
 import time
 import swagger_client
-from fabric.credmgr.swagger_client.rest import ApiException
+from swagger_client.rest import ApiException
 from pprint import pprint
 
 # create an instance of the API class
@@ -122,7 +122,7 @@ Request to revoke a refresh token for an user
 from __future__ import print_function
 import time
 import swagger_client
-from fabric.credmgr.swagger_client.rest import ApiException
+from swagger_client.rest import ApiException
 from pprint import pprint
 
 # create an instance of the API class
