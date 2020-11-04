@@ -14,23 +14,20 @@ from __future__ import absolute_import
 
 import unittest
 
-from fabric.credmgr.swagger_client.api.default_api import DefaultApi  # noqa: E501
 
-
-class TestDefaultApi(unittest.TestCase):
-    """DefaultApi unit test stubs"""
+class TestVersion(unittest.TestCase):
+    """Version unit test stubs"""
 
     def setUp(self):
-        self.api = DefaultApi()  # noqa: E501
+        pass
 
     def tearDown(self):
         pass
 
-    def test_version_get(self):
-        """Test case for version_get
-
-        version  # noqa: E501
-        """
+    def testVersion(self):
+        """Test Version"""
+        # FIXME: construct object with mandatory attributes with example values
+        # model = swagger_client.models.version.Version()  # noqa: E501
         pass
 
 
