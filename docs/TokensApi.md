@@ -19,12 +19,12 @@ Request to generate tokens for an user
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import fabric.credmgr.swagger_client
+from fabric.credmgr.swagger_client.rest import ApiException
 from pprint import pprint
 
 # create an instance of the API class
-api_instance = swagger_client.TokensApi()
+api_instance = fabric.credmgr.swagger_client.TokensApi()
 project_name = 'all' # str | Project Name (optional) (default to all)
 scope = 'all' # str | Scope for which token is requested (optional) (default to all)
 
@@ -69,13 +69,13 @@ Request to refresh OAuth tokens for an user
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import fabric.credmgr.swagger_client
+from fabric.credmgr.swagger_client.rest import ApiException
 from pprint import pprint
 
 # create an instance of the API class
-api_instance = swagger_client.TokensApi()
-body = swagger_client.Request() # Request |  (optional)
+api_instance = fabric.credmgr.swagger_client.TokensApi()
+body = fabric.credmgr.swagger_client.Request() # Request |  (optional)
 project_name = 'all' # str | Project Name (optional) (default to all)
 scope = 'all' # str | Scope for which token is requested (optional) (default to all)
 
@@ -121,13 +121,13 @@ Request to revoke a refresh token for an user
 ```python
 from __future__ import print_function
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import fabric.credmgr.swagger_client
+from fabric.credmgr.swagger_client.rest import ApiException
 from pprint import pprint
 
 # create an instance of the API class
-api_instance = swagger_client.TokensApi()
-body = swagger_client.Request() # Request |  (optional)
+api_instance = fabric.credmgr.swagger_client.TokensApi()
+body = fabric.credmgr.swagger_client.Request() # Request |  (optional)
 
 try:
     # Revoke a refresh token for an user
