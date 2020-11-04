@@ -21,7 +21,12 @@ VERSION = "0.1"
 # prerequisite: setuptools
 # http://pypi.python.org/pypi/setuptools
 
-REQUIRES = ["urllib3 >= 1.15", "six >= 1.10", "certifi", "python-dateutil"]
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+with open("requirements.txt", "r") as fh:
+    requirements = fh.read()
 
 setup(
     name=NAME,
@@ -30,10 +35,9 @@ setup(
     author_email="kthare10@unc.edu",
     url="",
     keywords=["Swagger", "Fabric Credential Manager API"],
-    install_requires=REQUIRES,
+    install_requires=requirements,
     packages=find_packages(),
     include_package_data=True,
-    long_description="""\
-    This is Fabric Credential Manager API  # noqa: E501
-    """
+    long_description=long_description,
+    long_description_content_type="text/markdown",
 )
