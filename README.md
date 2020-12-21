@@ -25,7 +25,7 @@ pip install git+https://github.com/fabric-testbed/fabric_credmgr.git
 
 Then import the package:
 ```python
-import fabric.credmgr.swagger_client 
+import fabric_cm.credmgr.swagger_client 
 ```
 
 ### Setuptools
@@ -39,7 +39,7 @@ python setup.py install --user
 
 Then import the package:
 ```python
-import fabric.credmgr.swagger_client
+import fabric_cm.credmgr.swagger_client
 ```
 
 ## Getting Started
@@ -49,12 +49,24 @@ Please follow the [installation procedure](#installation--usage) and then run th
 ```python
 from __future__ import print_function
 import time
-import fabric.credmgr.swagger_client
-from fabric.credmgr.swagger_client.rest import ApiException
+from fabric_cm.credmgr.swagger_client import DefaultApi
+from fabric_cm.credmgr.swagger_client import ApiClient
+from fabric_cm.credmgr.swagger_client.rest import ApiException
+from fabric_cm.credmgr.swagger_client.configuration import Configuration
 from pprint import pprint
 
 # create an instance of the API class
-api_instance = fabric.credmgr.swagger_client.DefaultApi(fabric.credmgr.swagger_client.ApiClient(configuration))
+api_instance = DefaultApi(ApiClient(configuration=Configuration()))
+
+try:
+    # Return Public Keys to verify signature of the tokens
+    api_response = api_instance.certs_get()
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling DefaultApi->certs_get: %s\n" % e)
+
+# create an instance of the API class
+api_instance = DefaultApi(ApiClient(configuration=Configuration()))
 
 try:
     # version
@@ -70,6 +82,7 @@ All URIs are relative to *http://127.0.0.1:7000/*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*DefaultApi* | [**certs_get**](docs/DefaultApi.md#certs_get) | **GET** /certs | Return Public Keys to verify signature of the tokens
 *DefaultApi* | [**version_get**](docs/DefaultApi.md#version_get) | **GET** /version | version
 *TokensApi* | [**tokens_create_post**](docs/TokensApi.md#tokens_create_post) | **POST** /tokens/create | Generate tokens for an user
 *TokensApi* | [**tokens_refresh_post**](docs/TokensApi.md#tokens_refresh_post) | **POST** /tokens/refresh | Refresh tokens for an user
@@ -77,6 +90,8 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [Jwks](docs/Jwks.md)
+ - [JwksKeys](docs/JwksKeys.md)
  - [Request](docs/Request.md)
  - [Success](docs/Success.md)
  - [Version](docs/Version.md)

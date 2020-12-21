@@ -14,7 +14,7 @@ from __future__ import absolute_import
 
 import unittest
 
-from fabric.credmgr.swagger_client.api.tokens_api import TokensApi  # noqa: E501
+from fabric_cm.credmgr.swagger_client.api.tokens_api import TokensApi  # noqa: E501
 
 
 class TestTokensApi(unittest.TestCase):

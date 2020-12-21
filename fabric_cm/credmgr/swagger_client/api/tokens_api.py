@@ -17,7 +17,7 @@ import re  # noqa: F401
 # python 2 and python 3 compatibility library
 import six
 
-from fabric.credmgr.swagger_client.api_client import ApiClient
+from fabric_cm.credmgr.swagger_client.api_client import ApiClient
 
 
 class TokensApi(object):

@@ -14,7 +14,7 @@ from __future__ import absolute_import
 
 import unittest
 
-from fabric.credmgr.swagger_client.api.default_api import DefaultApi  # noqa: E501
+from fabric_cm.credmgr.swagger_client.api.default_api import DefaultApi  # noqa: E501
 
 
 class TestDefaultApi(unittest.TestCase):
@@ -24,6 +24,13 @@ class TestDefaultApi(unittest.TestCase):
         self.api = DefaultApi()  # noqa: E501
 
     def tearDown(self):
+        pass
+
+    def test_certs_get(self):
+        """Test case for certs_get
+
+        Return Public Keys to verify signature of the tokens  # noqa: E501
+        """
         pass
 
     def test_version_get(self):
