@@ -1,3 +1,5 @@
+[![Requirements Status](https://requires.io/github/fabric-testbed/fabric_credmgr_client/requirements.svg?branch=master)](https://requires.io/github/fabric-testbed/fabric_credmgr_client/requirements/?branch=master)
+
 # Fabric Credential Manager Client
 This is Fabric Credential Manager API
 
