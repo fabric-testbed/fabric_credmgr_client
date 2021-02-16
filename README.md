@@ -27,7 +27,7 @@ pip install git+https://github.com/fabric-testbed/fabric_credmgr.git
 
 Then import the package:
 ```python
-import fabric_cm.credmgr.swagger_client 
+import fabric_cm.credmgr.credmgr_proxy 
 ```
 
 ### Setuptools
@@ -41,7 +41,7 @@ python setup.py install --user
 
 Then import the package:
 ```python
-import fabric_cm.credmgr.swagger_client
+from fabric_cm.credmgr.credmgr_proxy import CredmgrProxy
 ```
 
 ## Getting Started
@@ -49,33 +49,35 @@ import fabric_cm.credmgr.swagger_client
 Please follow the [installation procedure](#installation--usage) and then run the following:
 
 ```python
-from __future__ import print_function
-import time
-from fabric_cm.credmgr.swagger_client import DefaultApi
-from fabric_cm.credmgr.swagger_client import ApiClient
+from fabric_cm.credmgr.credmgr_proxy import CredmgrProxy
 from fabric_cm.credmgr.swagger_client.rest import ApiException
-from fabric_cm.credmgr.swagger_client.configuration import Configuration
-from pprint import pprint
 
-# create an instance of the API class
-api_instance = DefaultApi(ApiClient(configuration=Configuration()))
+credmgr_proxy = CredmgrProxy(credmgr_host="https://dev-2.fabric-testbed.net/")
+try:
+    version = credmgr_proxy.version_get()
+    print(version)
+except ApiException as e:
+    print("Exception when calling CredmgrProxy->version_get: %s\n" % e)
 
 try:
-    # Return Public Keys to verify signature of the tokens
-    api_response = api_instance.certs_get()
-    pprint(api_response)
+    version = credmgr_proxy.certs_get()
+    print(version)
 except ApiException as e:
-    print("Exception when calling DefaultApi->certs_get: %s\n" % e)
+    print("Exception when calling CredmgrProxy->certs_get: %s\n" % e)
 
-# create an instance of the API class
-api_instance = DefaultApi(ApiClient(configuration=Configuration()))
 
 try:
-    # version
-    api_response = api_instance.version_get()
-    pprint(api_response)
+    version = credmgr_proxy.refresh(project_name='all', scope='all', refresh_token='TOKEN')
+    print(version)
 except ApiException as e:
-    print("Exception when calling DefaultApi->version_get: %s\n" % e)
+    print("Exception when calling CredmgrProxy->refresh: %s\n" % e)
+
+try:
+    version = credmgr_proxy.revoke(refresh_token='TOKEN')
+    print(version)
+except ApiException as e:
+    print("Exception when calling CredmgrProxy->revoke: %s\n" % e)
+
 ```
 
 ## Documentation for API Endpoints
