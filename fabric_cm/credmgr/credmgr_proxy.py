@@ -23,14 +23,38 @@
 #
 #
 # Author: Komal Thareja (kthare10@renci.org)
+import enum
+from typing import Tuple, Any
+
 from fabric_cm.credmgr import swagger_client
 from fabric_cm.credmgr.swagger_client.rest import ApiException as CredMgrException
+
+
+@enum.unique
+class Status(enum.Enum):
+    OK = 1
+    INVALID_ARGUMENTS = 2
+    FAILURE = 3
+
+    def interpret(self, exception=None):
+        interpretations = {
+            1: "Success",
+            2: "Invalid Arguments",
+            3: "Failure"
+          }
+        if exception is None:
+            return interpretations[self.value]
+        else:
+            return str(exception) + ". " + interpretations[self.value]
 
 
 class CredmgrProxy:
     """
     Credential Manager Proxy
     """
+    ID_TOKEN = "id_token"
+    REFRESH_TOKEN = "refresh_token"
+
     def __init__(self, credmgr_host: str):
         self.host = credmgr_host
         self.tokens_api = None
@@ -42,13 +66,13 @@ class CredmgrProxy:
             self.tokens_api = swagger_client.TokensApi(api_client=api_instance)
             self.default_api = swagger_client.DefaultApi(api_client=api_instance)
 
-    def refresh(self, project_name: str, scope: str, refresh_token: str) -> dict:
+    def refresh(self, project_name: str, scope: str, refresh_token: str) -> Tuple[Status, Any, str]:
         """
         Refresh token
         @param project_name project name
         @param scope scope
         @param refresh_token refresh token
-        @returns the dictionary containing the tokens
+        @returns Tuple of Status, id token and refresh token. In case of failure, id token would be None
         @raises Exception in case of failure
         """
         try:
@@ -57,12 +81,17 @@ class CredmgrProxy:
                                                                project_name=project_name,
                                                                scope=scope)
 
-            return api_response.to_dict()
-
+            id_token = api_response.value.get(self.ID_TOKEN, None)
+            refresh_token = api_response.value.get(self.REFRESH_TOKEN, None)
+            return Status.OK, id_token, refresh_token
         except CredMgrException as e:
-            raise Exception(e.reason, e.body)
+            message = str(e.body)
+            if message is not None and self.REFRESH_TOKEN in message:
+                refresh_token = message.split(f"{self.REFRESH_TOKEN}:")[0]
+                refresh_token = refresh_token.strip()
+            return Status.FAILURE, None, refresh_token
 
-    def revoke(self, refresh_token: str) -> str:
+    def revoke(self, refresh_token: str) -> Tuple[Status, Any]:
         """
         Revoke token
         @param refresh_token refresh token
@@ -71,26 +100,28 @@ class CredmgrProxy:
         """
         try:
             body = swagger_client.Request(refresh_token)
-            api_response = self.tokens_api.tokens_revoke_post(body=body)
+            self.tokens_api.tokens_revoke_post(body=body)
 
-            return api_response.to_dict()
+            return Status.OK, None
         except CredMgrException as e:
-            raise Exception(e.reason, e.body)
+            return Status.FAILURE, str(e)
 
-    def certs_get(self):
+    def certs_get(self) -> Tuple[Status, Any]:
         """
         Return certificates
         """
         try:
-            return self.default_api.certs_get()
+            certs = self.default_api.certs_get()
+            return Status.OK, certs
         except CredMgrException as e:
-            raise Exception(e.reason, e.body)
+            return Status.FAILURE, str(e)
 
-    def version_get(self):
+    def version_get(self) -> Tuple[Status, Any]:
         """
         Return Version
         """
         try:
-            return self.default_api.version_get()
+            version = self.default_api.version_get()
+            return Status.OK, version
         except CredMgrException as e:
-            raise Exception(e.reason, e.body)
+            return Status.FAILURE, str(e)
