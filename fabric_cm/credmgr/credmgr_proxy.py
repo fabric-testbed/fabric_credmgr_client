@@ -89,7 +89,7 @@ class CredmgrProxy:
             if message is not None and self.REFRESH_TOKEN in message:
                 refresh_token = message.split(f"{self.REFRESH_TOKEN}:")[0]
                 refresh_token = refresh_token.strip()
-            return Status.FAILURE, None, refresh_token
+            return Status.FAILURE, e.body, refresh_token
 
     def revoke(self, refresh_token: str) -> Tuple[Status, Any]:
         """
@@ -104,7 +104,7 @@ class CredmgrProxy:
 
             return Status.OK, None
         except CredMgrException as e:
-            return Status.FAILURE, str(e)
+            return Status.FAILURE, e.body
 
     def certs_get(self) -> Tuple[Status, Any]:
         """
@@ -114,7 +114,7 @@ class CredmgrProxy:
             certs = self.default_api.certs_get()
             return Status.OK, certs
         except CredMgrException as e:
-            return Status.FAILURE, str(e)
+            return Status.FAILURE, e.body
 
     def version_get(self) -> Tuple[Status, Any]:
         """
@@ -124,4 +124,4 @@ class CredmgrProxy:
             version = self.default_api.version_get()
             return Status.OK, version
         except CredMgrException as e:
-            return Status.FAILURE, str(e)
+            return Status.FAILURE, e.body
