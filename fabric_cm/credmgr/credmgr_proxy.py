@@ -89,6 +89,8 @@ class CredmgrProxy:
             if message is not None and self.REFRESH_TOKEN in message:
                 refresh_token = message.split(f"{self.REFRESH_TOKEN}:")[1]
                 refresh_token = refresh_token.strip()
+                refresh_token = refresh_token.strip("\"")
+                refresh_token = refresh_token.strip("\n")
             return Status.FAILURE, e.body, refresh_token
 
     def revoke(self, refresh_token: str) -> Tuple[Status, Any]:
