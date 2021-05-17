@@ -81,9 +81,8 @@ class CredmgrProxy:
                                                                project_name=project_name,
                                                                scope=scope)
 
-            id_token = api_response.value.get(self.ID_TOKEN, None)
-            refresh_token = api_response.value.get(self.REFRESH_TOKEN, None)
-            return Status.OK, id_token, refresh_token
+            api_response_dict = api_response.to_dict()
+            return Status.OK, api_response_dict[self.ID_TOKEN], api_response_dict[self.REFRESH_TOKEN]
         except CredMgrException as e:
             message = str(e.body)
             if message is not None and self.REFRESH_TOKEN in message:
