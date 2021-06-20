@@ -11,9 +11,10 @@
 """
 
 from setuptools import setup, find_packages  # noqa: H301
+from fabric_cm import __VERSION__
 
 NAME = "fabric-credmgr-client"
-VERSION = "0.1.4"
+VERSION = __VERSION__
 # To install the library, run the following
 #
 # python setup.py install

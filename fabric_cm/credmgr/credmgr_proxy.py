@@ -24,6 +24,8 @@
 #
 # Author: Komal Thareja (kthare10@renci.org)
 import enum
+import json
+from datetime import datetime
 from typing import Tuple, Any
 
 from fabric_cm.credmgr import swagger_client
@@ -54,6 +56,7 @@ class CredmgrProxy:
     """
     ID_TOKEN = "id_token"
     REFRESH_TOKEN = "refresh_token"
+    TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
     def __init__(self, credmgr_host: str):
         self.host = credmgr_host
@@ -66,12 +69,14 @@ class CredmgrProxy:
             self.tokens_api = swagger_client.TokensApi(api_client=api_instance)
             self.default_api = swagger_client.DefaultApi(api_client=api_instance)
 
-    def refresh(self, project_name: str, scope: str, refresh_token: str) -> Tuple[Status, Any, str]:
+    def refresh(self, project_name: str, scope: str, refresh_token: str,
+                file_name: str = None) -> Tuple[Status, Any, str]:
         """
         Refresh token
         @param project_name project name
         @param scope scope
         @param refresh_token refresh token
+        @param file_name File name
         @returns Tuple of Status, id token and refresh token. In case of failure, id token would be None
         @raises Exception in case of failure
         """
@@ -82,6 +87,12 @@ class CredmgrProxy:
                                                                scope=scope)
 
             api_response_dict = api_response.to_dict()
+            if file_name is not None:
+                tokens_json = {"id_token": api_response_dict[self.ID_TOKEN],
+                               "refresh_token": api_response_dict[self.REFRESH_TOKEN],
+                               "created_at": datetime.strftime(datetime.utcnow(), self.TIME_FORMAT)}
+                with open(file_name, 'w') as f:
+                    json.dump(tokens_json, f)
             return Status.OK, api_response_dict[self.ID_TOKEN], api_response_dict[self.REFRESH_TOKEN]
         except CredMgrException as e:
             message = str(e.body)
