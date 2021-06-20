@@ -57,6 +57,7 @@ class CredmgrProxy:
     ID_TOKEN = "id_token"
     REFRESH_TOKEN = "refresh_token"
     TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+    CREATED_AT = "created_at"
 
     def __init__(self, credmgr_host: str):
         self.host = credmgr_host
@@ -88,9 +89,9 @@ class CredmgrProxy:
 
             api_response_dict = api_response.to_dict()
             if file_name is not None:
-                tokens_json = {"id_token": api_response_dict[self.ID_TOKEN],
-                               "refresh_token": api_response_dict[self.REFRESH_TOKEN],
-                               "created_at": datetime.strftime(datetime.utcnow(), self.TIME_FORMAT)}
+                tokens_json = {self.ID_TOKEN: api_response_dict[self.ID_TOKEN],
+                               self.REFRESH_TOKEN: api_response_dict[self.REFRESH_TOKEN],
+                               self.CREATED_AT: datetime.strftime(datetime.utcnow(), self.TIME_FORMAT)}
                 with open(file_name, 'w') as f:
                     json.dump(tokens_json, f)
             return Status.OK, api_response_dict[self.ID_TOKEN], api_response_dict[self.REFRESH_TOKEN]
