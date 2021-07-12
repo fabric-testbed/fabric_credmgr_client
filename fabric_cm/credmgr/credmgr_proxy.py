@@ -28,6 +28,8 @@ import json
 from datetime import datetime
 from typing import Tuple, Any
 
+from atomicwrites import atomic_write
+
 from fabric_cm.credmgr import swagger_client
 from fabric_cm.credmgr.swagger_client.rest import ApiException as CredMgrException
 
@@ -58,6 +60,7 @@ class CredmgrProxy:
     REFRESH_TOKEN = "refresh_token"
     TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
     CREATED_AT = "created_at"
+    ERROR = "error"
 
     def __init__(self, credmgr_host: str):
         self.host = credmgr_host
@@ -71,14 +74,14 @@ class CredmgrProxy:
             self.default_api = swagger_client.DefaultApi(api_client=api_instance)
 
     def refresh(self, project_name: str, scope: str, refresh_token: str,
-                file_name: str = None) -> Tuple[Status, Any, str]:
+                file_name: str = None) -> Tuple[Status, dict]:
         """
         Refresh token
         @param project_name project name
         @param scope scope
         @param refresh_token refresh token
         @param file_name File name
-        @returns Tuple of Status, id token and refresh token. In case of failure, id token would be None
+        @returns Tuple of Status, dictionary {id_token/error, refresh_token, created_at}. In case of failure, id token would be None
         @raises Exception in case of failure
         """
         try:
@@ -88,21 +91,24 @@ class CredmgrProxy:
                                                                scope=scope)
 
             api_response_dict = api_response.to_dict()
+            tokens_json = {self.ID_TOKEN: api_response_dict[self.ID_TOKEN],
+                           self.REFRESH_TOKEN: api_response_dict[self.REFRESH_TOKEN],
+                           self.CREATED_AT: datetime.strftime(datetime.utcnow(), self.TIME_FORMAT)}
             if file_name is not None:
-                tokens_json = {self.ID_TOKEN: api_response_dict[self.ID_TOKEN],
-                               self.REFRESH_TOKEN: api_response_dict[self.REFRESH_TOKEN],
-                               self.CREATED_AT: datetime.strftime(datetime.utcnow(), self.TIME_FORMAT)}
-                with open(file_name, 'w') as f:
+                with atomic_write(file_name, overwrite=True) as f:
                     json.dump(tokens_json, f)
-            return Status.OK, api_response_dict[self.ID_TOKEN], api_response_dict[self.REFRESH_TOKEN]
+            return Status.OK, tokens_json
         except CredMgrException as e:
             message = str(e.body)
+            tokens_json = {self.ERROR: e.body,
+                           self.CREATED_AT: datetime.strftime(datetime.utcnow(), self.TIME_FORMAT)}
             if message is not None and self.REFRESH_TOKEN in message:
                 refresh_token = message.split(f"{self.REFRESH_TOKEN}:")[1]
                 refresh_token = refresh_token.strip()
                 refresh_token = refresh_token.strip("\"")
                 refresh_token = refresh_token.strip("\n")
-            return Status.FAILURE, e.body, refresh_token
+                tokens_json[self.REFRESH_TOKEN] = refresh_token
+            return Status.FAILURE, tokens_json
 
     def revoke(self, refresh_token: str) -> Tuple[Status, Any]:
         """
