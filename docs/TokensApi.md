@@ -25,7 +25,7 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = fabric_cm.credmgr.swagger_client.TokensApi()
-project_name = 'all' # str | Project Name (optional) (default to all)
+project_name = 'CF Test' # str | Project Name
 scope = 'all' # str | Scope for which token is requested (optional) (default to all)
 
 try:
@@ -40,7 +40,7 @@ except ApiException as e:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **project_name** | **str**| Project Name | [optional] [default to all]
+ **project_name** | **str**| Project Name | [required] 
  **scope** | **str**| Scope for which token is requested | [optional] [default to all]
 
 ### Return type
@@ -76,7 +76,7 @@ from pprint import pprint
 # create an instance of the API class
 api_instance = fabric_cm.credmgr.swagger_client.TokensApi()
 body = fabric_cm.credmgr.swagger_client.Request() # Request |  (optional)
-project_name = 'all' # str | Project Name (optional) (default to all)
+project_name = 'CF Test' # str | Project Name
 scope = 'all' # str | Scope for which token is requested (optional) (default to all)
 
 try:
@@ -91,10 +91,9 @@ except ApiException as e:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **body** | [**Request**](Request.md)|  | [optional] 
- **project_name** | **str**| Project Name | [optional] [default to all]
+ **project_name** | **str**| Project Name | [required] 
  **scope** | **str**| Scope for which token is requested | [optional] [default to all]
-
+ **body** | [**Request**](Request.md)|  | [optional] 
 ### Return type
 
 [**Success**](Success.md)

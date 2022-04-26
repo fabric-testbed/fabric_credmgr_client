@@ -67,7 +67,7 @@ except ApiException as e:
 
 
 try:
-    version = credmgr_proxy.refresh(project_name='all', scope='all', refresh_token='TOKEN')
+    version = credmgr_proxy.refresh(project_name='CF Test', scope='all', refresh_token='TOKEN')
     print(version)
 except ApiException as e:
     print("Exception when calling CredmgrProxy->refresh: %s\n" % e)
