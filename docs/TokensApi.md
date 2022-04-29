@@ -9,7 +9,7 @@ Method | HTTP request | Description
 [**tokens_revoke_post**](TokensApi.md#tokens_revoke_post) | **POST** /tokens/revoke | Revoke a refresh token for an user
 
 # **tokens_create_post**
-> Success tokens_create_post(project_name=project_name, scope=scope)
+> Success tokens_create_post(project_id=project_id, scope=scope)
 
 Generate tokens for an user
 
@@ -25,12 +25,12 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = fabric_cm.credmgr.swagger_client.TokensApi()
-project_name = 'all' # str | Project Name (optional) (default to all)
+project_id = '12345' # str | Project Id
 scope = 'all' # str | Scope for which token is requested (optional) (default to all)
 
 try:
     # Generate tokens for an user
-    api_response = api_instance.tokens_create_post(project_name=project_name, scope=scope)
+    api_response = api_instance.tokens_create_post(project_id=project_id, scope=scope)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling TokensApi->tokens_create_post: %s\n" % e)
@@ -40,7 +40,7 @@ except ApiException as e:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **project_name** | **str**| Project Name | [optional] [default to all]
+ **project_id** | **str**| Project Id | [required] 
  **scope** | **str**| Scope for which token is requested | [optional] [default to all]
 
 ### Return type
@@ -59,7 +59,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **tokens_refresh_post**
-> Success tokens_refresh_post(body=body, project_name=project_name, scope=scope)
+> Success tokens_refresh_post(body=body, project_id=project_id, scope=scope)
 
 Refresh tokens for an user
 
@@ -76,12 +76,12 @@ from pprint import pprint
 # create an instance of the API class
 api_instance = fabric_cm.credmgr.swagger_client.TokensApi()
 body = fabric_cm.credmgr.swagger_client.Request() # Request |  (optional)
-project_name = 'all' # str | Project Name (optional) (default to all)
+project_id = '12345' # str | Project Id
 scope = 'all' # str | Scope for which token is requested (optional) (default to all)
 
 try:
     # Refresh tokens for an user
-    api_response = api_instance.tokens_refresh_post(body=body, project_name=project_name, scope=scope)
+    api_response = api_instance.tokens_refresh_post(body=body, project_id=project_id, scope=scope)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling TokensApi->tokens_refresh_post: %s\n" % e)
@@ -91,10 +91,9 @@ except ApiException as e:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **body** | [**Request**](Request.md)|  | [optional] 
- **project_name** | **str**| Project Name | [optional] [default to all]
+ **project_id** | **str**| Project Id | [required] 
  **scope** | **str**| Scope for which token is requested | [optional] [default to all]
-
+ **body** | [**Request**](Request.md)|  | [optional] 
 ### Return type
 
 [**Success**](Success.md)

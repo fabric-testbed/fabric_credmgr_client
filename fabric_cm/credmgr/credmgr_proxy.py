@@ -73,11 +73,11 @@ class CredmgrProxy:
             self.tokens_api = swagger_client.TokensApi(api_client=api_instance)
             self.default_api = swagger_client.DefaultApi(api_client=api_instance)
 
-    def refresh(self, project_name: str, scope: str, refresh_token: str,
+    def refresh(self, project_id: str, scope: str, refresh_token: str,
                 file_name: str = None) -> Tuple[Status, dict]:
         """
         Refresh token
-        @param project_name project name
+        @param project_id Project Id
         @param scope scope
         @param refresh_token refresh token
         @param file_name File name
@@ -87,7 +87,7 @@ class CredmgrProxy:
         try:
             body = swagger_client.Request(refresh_token)
             api_response = self.tokens_api.tokens_refresh_post(body=body,
-                                                               project_name=project_name,
+                                                               project_id=project_id,
                                                                scope=scope)
 
             api_response_dict = api_response.to_dict()

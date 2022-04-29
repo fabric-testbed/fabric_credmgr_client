@@ -42,7 +42,7 @@ class TokensApi(object):
         >>> result = thread.get()
 
         :param async_req bool
-        :param str project_name: Project Name
+        :param str project_id: Project Id
         :param str scope: Scope for which token is requested
         :return: Success
                  If the method is called asynchronously,
@@ -65,14 +65,14 @@ class TokensApi(object):
         >>> result = thread.get()
 
         :param async_req bool
-        :param str project_name: Project Name
+        :param str project_id: Project Id
         :param str scope: Scope for which token is requested
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['project_name', 'scope']  # noqa: E501
+        all_params = ['project_id', 'scope']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -93,8 +93,8 @@ class TokensApi(object):
         path_params = {}
 
         query_params = []
-        if 'project_name' in params:
-            query_params.append(('projectName', params['project_name']))  # noqa: E501
+        if 'project_id' in params:
+            query_params.append(('projectId', params['project_id']))  # noqa: E501
         if 'scope' in params:
             query_params.append(('scope', params['scope']))  # noqa: E501
 
@@ -138,7 +138,7 @@ class TokensApi(object):
 
         :param async_req bool
         :param Request body:
-        :param str project_name: Project Name
+        :param str project_id: Project Id
         :param str scope: Scope for which token is requested
         :return: Success
                  If the method is called asynchronously,
@@ -162,14 +162,14 @@ class TokensApi(object):
 
         :param async_req bool
         :param Request body:
-        :param str project_name: Project Name
+        :param str project_id: Project Id
         :param str scope: Scope for which token is requested
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['body', 'project_name', 'scope']  # noqa: E501
+        all_params = ['body', 'project_id', 'scope']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -190,8 +190,8 @@ class TokensApi(object):
         path_params = {}
 
         query_params = []
-        if 'project_name' in params:
-            query_params.append(('projectName', params['project_name']))  # noqa: E501
+        if 'project_id' in params:
+            query_params.append(('projectId', params['project_id']))  # noqa: E501
         if 'scope' in params:
             query_params.append(('scope', params['scope']))  # noqa: E501
 
