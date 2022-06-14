@@ -56,7 +56,6 @@ class CredmgrProxy:
     """
     Credential Manager Proxy
     """
-    ID_TOKEN = "id_token"
     REFRESH_TOKEN = "refresh_token"
     TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
     CREATED_AT = "created_at"
@@ -72,6 +71,7 @@ class CredmgrProxy:
             api_instance = swagger_client.ApiClient(configuration)
             self.tokens_api = swagger_client.TokensApi(api_client=api_instance)
             self.default_api = swagger_client.DefaultApi(api_client=api_instance)
+            self.version_api = swagger_client.VersionApi(api_client=api_instance)
 
     def refresh(self, project_id: str, scope: str, refresh_token: str,
                 file_name: str = None) -> Tuple[Status, dict]:
@@ -86,14 +86,9 @@ class CredmgrProxy:
         """
         try:
             body = swagger_client.Request(refresh_token)
-            api_response = self.tokens_api.tokens_refresh_post(body=body,
-                                                               project_id=project_id,
-                                                               scope=scope)
+            tokens = self.tokens_api.tokens_refresh_post(body=body, project_id=project_id, scope=scope)
 
-            api_response_dict = api_response.to_dict()
-            tokens_json = {self.ID_TOKEN: api_response_dict[self.ID_TOKEN],
-                           self.REFRESH_TOKEN: api_response_dict[self.REFRESH_TOKEN],
-                           self.CREATED_AT: datetime.strftime(datetime.utcnow(), self.TIME_FORMAT)}
+            tokens_json = tokens.data[0].to_dict()
             if file_name is not None:
                 with atomic_write(file_name, overwrite=True) as f:
                     json.dump(tokens_json, f)
@@ -140,7 +135,7 @@ class CredmgrProxy:
         Return Version
         """
         try:
-            version = self.default_api.version_get()
+            version = self.version_api.version_get()
             return Status.OK, version
         except CredMgrException as e:
             return Status.FAILURE, e.body
