@@ -56,6 +56,7 @@ class CredmgrProxy:
     """
     Credential Manager Proxy
     """
+    ID_TOKEN = "id_token"
     REFRESH_TOKEN = "refresh_token"
     TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
     CREATED_AT = "created_at"
