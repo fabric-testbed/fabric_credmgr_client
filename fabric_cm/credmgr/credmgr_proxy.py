@@ -121,6 +121,23 @@ class CredmgrProxy:
         except CredMgrException as e:
             return Status.FAILURE, e.body
 
+    def clear_token_cache(self, *, file_name: str) -> Tuple[Status, Any]:
+        """
+        Clear cached token
+        @param file_name name of the file containing the cached token
+        @return STATUS.OK for success, STATUS.FAILURE and exception in case of failure
+        """
+        try:
+            with open(self.file_name, 'r') as stream:
+                token_data = json.loads(stream.read())
+            if self.ID_TOKEN in token_data:
+                token_data.pop(self.ID_TOKEN)
+            with atomic_write(file_name, overwrite=True) as f:
+                json.dump(token_data, f)
+        except Exception as e:
+            return Status.FAILURE, e
+        return Status.OK, None
+
     def certs_get(self) -> Tuple[Status, Any]:
         """
         Return certificates
