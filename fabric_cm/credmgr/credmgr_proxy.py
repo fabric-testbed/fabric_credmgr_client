@@ -72,6 +72,7 @@ class CredmgrProxy:
             api_instance = swagger_client.ApiClient(configuration)
             self.tokens_api = swagger_client.TokensApi(api_client=api_instance)
             self.default_api = swagger_client.DefaultApi(api_client=api_instance)
+            self.version_api = swagger_client.VersionApi(api_client=api_instance)
 
     def refresh(self, project_id: str, scope: str, refresh_token: str,
                 file_name: str = None) -> Tuple[Status, dict]:
@@ -86,14 +87,9 @@ class CredmgrProxy:
         """
         try:
             body = swagger_client.Request(refresh_token)
-            api_response = self.tokens_api.tokens_refresh_post(body=body,
-                                                               project_id=project_id,
-                                                               scope=scope)
+            tokens = self.tokens_api.tokens_refresh_post(body=body, project_id=project_id, scope=scope)
 
-            api_response_dict = api_response.to_dict()
-            tokens_json = {self.ID_TOKEN: api_response_dict[self.ID_TOKEN],
-                           self.REFRESH_TOKEN: api_response_dict[self.REFRESH_TOKEN],
-                           self.CREATED_AT: datetime.strftime(datetime.utcnow(), self.TIME_FORMAT)}
+            tokens_json = tokens.data[0].to_dict()
             if file_name is not None:
                 with atomic_write(file_name, overwrite=True) as f:
                     json.dump(tokens_json, f)
@@ -125,6 +121,23 @@ class CredmgrProxy:
         except CredMgrException as e:
             return Status.FAILURE, e.body
 
+    def clear_token_cache(self, *, file_name: str) -> Tuple[Status, Any]:
+        """
+        Clear cached token
+        @param file_name name of the file containing the cached token
+        @return STATUS.OK for success, STATUS.FAILURE and exception in case of failure
+        """
+        try:
+            with open(self.file_name, 'r') as stream:
+                token_data = json.loads(stream.read())
+            if self.ID_TOKEN in token_data:
+                token_data.pop(self.ID_TOKEN)
+            with atomic_write(file_name, overwrite=True) as f:
+                json.dump(token_data, f)
+        except Exception as e:
+            return Status.FAILURE, e
+        return Status.OK, None
+
     def certs_get(self) -> Tuple[Status, Any]:
         """
         Return certificates
@@ -140,7 +153,7 @@ class CredmgrProxy:
         Return Version
         """
         try:
-            version = self.default_api.version_get()
+            version = self.version_api.version_get()
             return Status.OK, version
         except CredMgrException as e:
             return Status.FAILURE, e.body
