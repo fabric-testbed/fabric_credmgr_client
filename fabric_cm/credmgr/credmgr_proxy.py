@@ -68,7 +68,7 @@ class CredmgrProxy:
         if credmgr_host is not None:
             # create an instance of the API class
             configuration = swagger_client.configuration.Configuration()
-            configuration.host = f"https://{credmgr_host}/"
+            configuration.host = f"https://{credmgr_host}/credmgr/"
             api_instance = swagger_client.ApiClient(configuration)
             self.tokens_api = swagger_client.TokensApi(api_client=api_instance)
             self.default_api = swagger_client.DefaultApi(api_client=api_instance)
