@@ -1,6 +1,6 @@
 # swagger_client.TokensApi
 
-All URIs are relative to *http://127.0.0.1:7000/*
+All URIs are relative to *http://127.0.0.1:7000/credmgr/*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
