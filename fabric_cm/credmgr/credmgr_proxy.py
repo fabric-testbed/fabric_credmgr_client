@@ -128,7 +128,7 @@ class CredmgrProxy:
         @return STATUS.OK for success, STATUS.FAILURE and exception in case of failure
         """
         try:
-            with open(self.file_name, 'r') as stream:
+            with open(file_name, 'r') as stream:
                 token_data = json.loads(stream.read())
             if self.ID_TOKEN in token_data:
                 token_data.pop(self.ID_TOKEN)
