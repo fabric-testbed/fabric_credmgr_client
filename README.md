@@ -1,5 +1,3 @@
-[![Requirements Status](https://requires.io/github/fabric-testbed/fabric_credmgr_client/requirements.svg?branch=master)](https://requires.io/github/fabric-testbed/fabric_credmgr_client/requirements/?branch=master)
-
 [![PyPI](https://img.shields.io/pypi/v/fabric_credmgr_client?style=plastic)](https://pypi.org/project/fabric_credmgr_client/)
 
 # Fabric Credential Manager Client
