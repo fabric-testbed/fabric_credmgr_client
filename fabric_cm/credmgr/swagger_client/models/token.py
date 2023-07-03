@@ -28,26 +28,203 @@ class Token(object):
                             and the value is json key in definition.
     """
     swagger_types = {
+        'token_hash': 'str',
+        'created_at': 'str',
+        'expires_at': 'str',
+        'state': 'str',
+        'created_from': 'str',
+        'comment': 'str',
         'id_token': 'str',
-        'refresh_token': 'str',
-        'created_at': 'str'
+        'refresh_token': 'str'
     }
 
     attribute_map = {
+        'token_hash': 'token_hash',
+        'created_at': 'created_at',
+        'expires_at': 'expires_at',
+        'state': 'state',
+        'created_from': 'created_from',
+        'comment': 'comment',
         'id_token': 'id_token',
-        'refresh_token': 'refresh_token',
-        'created_at': 'created_at'
+        'refresh_token': 'refresh_token'
     }
 
-    def __init__(self, id_token=None, refresh_token=None, created_at=None):  # noqa: E501
+    def __init__(self, token_hash=None, created_at=None, expires_at=None, state=None, created_from=None, comment=None, id_token=None, refresh_token=None):  # noqa: E501
         """Token - a model defined in Swagger"""  # noqa: E501
+        self._token_hash = None
+        self._created_at = None
+        self._expires_at = None
+        self._state = None
+        self._created_from = None
+        self._comment = None
         self._id_token = None
         self._refresh_token = None
-        self._created_at = None
         self.discriminator = None
-        self.id_token = id_token
-        self.refresh_token = refresh_token
+        self.token_hash = token_hash
         self.created_at = created_at
+        self.expires_at = expires_at
+        self.state = state
+        self.created_from = created_from
+        if comment is not None:
+            self.comment = comment
+        if id_token is not None:
+            self.id_token = id_token
+        if refresh_token is not None:
+            self.refresh_token = refresh_token
+
+    @property
+    def token_hash(self):
+        """Gets the token_hash of this Token.  # noqa: E501
+
+        Identity Token SHA256 Hash  # noqa: E501
+
+        :return: The token_hash of this Token.  # noqa: E501
+        :rtype: str
+        """
+        return self._token_hash
+
+    @token_hash.setter
+    def token_hash(self, token_hash):
+        """Sets the token_hash of this Token.
+
+        Identity Token SHA256 Hash  # noqa: E501
+
+        :param token_hash: The token_hash of this Token.  # noqa: E501
+        :type: str
+        """
+        if token_hash is None:
+            raise ValueError("Invalid value for `token_hash`, must not be `None`")  # noqa: E501
+
+        self._token_hash = token_hash
+
+    @property
+    def created_at(self):
+        """Gets the created_at of this Token.  # noqa: E501
+
+        Token creation time  # noqa: E501
+
+        :return: The created_at of this Token.  # noqa: E501
+        :rtype: str
+        """
+        return self._created_at
+
+    @created_at.setter
+    def created_at(self, created_at):
+        """Sets the created_at of this Token.
+
+        Token creation time  # noqa: E501
+
+        :param created_at: The created_at of this Token.  # noqa: E501
+        :type: str
+        """
+        if created_at is None:
+            raise ValueError("Invalid value for `created_at`, must not be `None`")  # noqa: E501
+
+        self._created_at = created_at
+
+    @property
+    def expires_at(self):
+        """Gets the expires_at of this Token.  # noqa: E501
+
+        Token expiry time  # noqa: E501
+
+        :return: The expires_at of this Token.  # noqa: E501
+        :rtype: str
+        """
+        return self._expires_at
+
+    @expires_at.setter
+    def expires_at(self, expires_at):
+        """Sets the expires_at of this Token.
+
+        Token expiry time  # noqa: E501
+
+        :param expires_at: The expires_at of this Token.  # noqa: E501
+        :type: str
+        """
+        if expires_at is None:
+            raise ValueError("Invalid value for `expires_at`, must not be `None`")  # noqa: E501
+
+        self._expires_at = expires_at
+
+    @property
+    def state(self):
+        """Gets the state of this Token.  # noqa: E501
+
+        Token state  # noqa: E501
+
+        :return: The state of this Token.  # noqa: E501
+        :rtype: str
+        """
+        return self._state
+
+    @state.setter
+    def state(self, state):
+        """Sets the state of this Token.
+
+        Token state  # noqa: E501
+
+        :param state: The state of this Token.  # noqa: E501
+        :type: str
+        """
+        if state is None:
+            raise ValueError("Invalid value for `state`, must not be `None`")  # noqa: E501
+        allowed_values = ["Nascent", "Valid", "Refreshed", "Revoked", "Expired"]  # noqa: E501
+        if state not in allowed_values:
+            raise ValueError(
+                "Invalid value for `state` ({0}), must be one of {1}"  # noqa: E501
+                .format(state, allowed_values)
+            )
+
+        self._state = state
+
+    @property
+    def created_from(self):
+        """Gets the created_from of this Token.  # noqa: E501
+
+        Remote IP from where the token create request was received  # noqa: E501
+
+        :return: The created_from of this Token.  # noqa: E501
+        :rtype: str
+        """
+        return self._created_from
+
+    @created_from.setter
+    def created_from(self, created_from):
+        """Sets the created_from of this Token.
+
+        Remote IP from where the token create request was received  # noqa: E501
+
+        :param created_from: The created_from of this Token.  # noqa: E501
+        :type: str
+        """
+        if created_from is None:
+            raise ValueError("Invalid value for `created_from`, must not be `None`")  # noqa: E501
+
+        self._created_from = created_from
+
+    @property
+    def comment(self):
+        """Gets the comment of this Token.  # noqa: E501
+
+        Comment provided at creation  # noqa: E501
+
+        :return: The comment of this Token.  # noqa: E501
+        :rtype: str
+        """
+        return self._comment
+
+    @comment.setter
+    def comment(self, comment):
+        """Sets the comment of this Token.
+
+        Comment provided at creation  # noqa: E501
+
+        :param comment: The comment of this Token.  # noqa: E501
+        :type: str
+        """
+
+        self._comment = comment
 
     @property
     def id_token(self):
@@ -69,8 +246,6 @@ class Token(object):
         :param id_token: The id_token of this Token.  # noqa: E501
         :type: str
         """
-        if id_token is None:
-            raise ValueError("Invalid value for `id_token`, must not be `None`")  # noqa: E501
 
         self._id_token = id_token
 
@@ -94,33 +269,8 @@ class Token(object):
         :param refresh_token: The refresh_token of this Token.  # noqa: E501
         :type: str
         """
-        if refresh_token is None:
-            raise ValueError("Invalid value for `refresh_token`, must not be `None`")  # noqa: E501
 
         self._refresh_token = refresh_token
-
-    @property
-    def created_at(self):
-        """Gets the created_at of this Token.  # noqa: E501
-
-
-        :return: The created_at of this Token.  # noqa: E501
-        :rtype: str
-        """
-        return self._created_at
-
-    @created_at.setter
-    def created_at(self, created_at):
-        """Sets the created_at of this Token.
-
-
-        :param created_at: The created_at of this Token.  # noqa: E501
-        :type: str
-        """
-        if created_at is None:
-            raise ValueError("Invalid value for `created_at`, must not be `None`")  # noqa: E501
-
-        self._created_at = created_at
 
     def to_dict(self):
         """Returns the model properties as a dict"""

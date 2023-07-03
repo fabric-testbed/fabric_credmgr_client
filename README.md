@@ -80,14 +80,18 @@ except ApiException as e:
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *http://127.0.0.1:7000/*
+All URIs are relative to *http://127.0.0.1:7000/credmgr/*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *DefaultApi* | [**certs_get**](docs/DefaultApi.md#certs_get) | **GET** /certs | Return Public Keys to verify signature of the tokens
 *TokensApi* | [**tokens_create_post**](docs/TokensApi.md#tokens_create_post) | **POST** /tokens/create | Generate tokens for an user
+*TokensApi* | [**tokens_get**](docs/TokensApi.md#tokens_get) | **GET** /tokens | Get tokens
 *TokensApi* | [**tokens_refresh_post**](docs/TokensApi.md#tokens_refresh_post) | **POST** /tokens/refresh | Refresh tokens for an user
-*TokensApi* | [**tokens_revoke_post**](docs/TokensApi.md#tokens_revoke_post) | **POST** /tokens/revoke | Revoke a refresh token for an user
+*TokensApi* | [**tokens_revoke_list_get**](docs/TokensApi.md#tokens_revoke_list_get) | **GET** /tokens/revoke_list | Get token revoke list i.e. list of revoked identity token hashes
+*TokensApi* | [**tokens_revoke_post**](docs/TokensApi.md#tokens_revoke_post) | **POST** /tokens/revoke | Revoke a token for an user
+*TokensApi* | [**tokens_revokes_post**](docs/TokensApi.md#tokens_revokes_post) | **POST** /tokens/revokes | Revoke a token
+*TokensApi* | [**tokens_validate_post**](docs/TokensApi.md#tokens_validate_post) | **POST** /tokens/validate | Validate an identity token issued by Credential Manager
 *VersionApi* | [**version_get**](docs/VersionApi.md#version_get) | **GET** /version | Version
 
 ## Documentation For Models
@@ -95,8 +99,10 @@ Class | Method | HTTP request | Description
  - [Jwks](docs/Jwks.md)
  - [JwksKeys](docs/JwksKeys.md)
  - [Request](docs/Request.md)
+ - [RevokeList](docs/RevokeList.md)
  - [Status200OkNoContent](docs/Status200OkNoContent.md)
  - [Status200OkNoContentData](docs/Status200OkNoContentData.md)
+ - [Status200OkPaginated](docs/Status200OkPaginated.md)
  - [Status200OkSingle](docs/Status200OkSingle.md)
  - [Status400BadRequest](docs/Status400BadRequest.md)
  - [Status400BadRequestErrors](docs/Status400BadRequestErrors.md)
@@ -109,6 +115,7 @@ Class | Method | HTTP request | Description
  - [Status500InternalServerError](docs/Status500InternalServerError.md)
  - [Status500InternalServerErrorErrors](docs/Status500InternalServerErrorErrors.md)
  - [Token](docs/Token.md)
+ - [TokenPost](docs/TokenPost.md)
  - [Tokens](docs/Tokens.md)
  - [Version](docs/Version.md)
  - [VersionData](docs/VersionData.md)

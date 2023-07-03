@@ -44,6 +44,8 @@ class TokensApi(object):
         :param async_req bool
         :param str project_id: Project identified by universally unique identifier
         :param str scope: Scope for which token is requested
+        :param int lifetime: Lifetime of the token requested in hours
+        :param str comment: Comment
         :return: Tokens
                  If the method is called asynchronously,
                  returns the request thread.
@@ -67,12 +69,14 @@ class TokensApi(object):
         :param async_req bool
         :param str project_id: Project identified by universally unique identifier
         :param str scope: Scope for which token is requested
+        :param int lifetime: Lifetime of the token requested in hours
+        :param str comment: Comment
         :return: Tokens
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['project_id', 'scope']  # noqa: E501
+        all_params = ['project_id', 'scope', 'lifetime', 'comment']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -97,6 +101,10 @@ class TokensApi(object):
             query_params.append(('project_id', params['project_id']))  # noqa: E501
         if 'scope' in params:
             query_params.append(('scope', params['scope']))  # noqa: E501
+        if 'lifetime' in params:
+            query_params.append(('lifetime', params['lifetime']))  # noqa: E501
+        if 'comment' in params:
+            query_params.append(('comment', params['comment']))  # noqa: E501
 
         header_params = {}
 
@@ -113,6 +121,118 @@ class TokensApi(object):
 
         return self.api_client.call_api(
             '/tokens/create', 'POST',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Tokens',  # noqa: E501
+            auth_settings=auth_settings,
+            async_req=params.get('async_req'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def tokens_get(self, **kwargs):  # noqa: E501
+        """Get tokens  # noqa: E501
+
+        Get tokens for a user in a project   # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+        >>> thread = api.tokens_get(async_req=True)
+        >>> result = thread.get()
+
+        :param async_req bool
+        :param str token_hash: Token identified by SHA256 hash
+        :param str project_id: Project identified by universally unique identifier
+        :param str expires: Search for tokens with expiry time lesser than the specified expiration time
+        :param list[str] states: Search for Tokens in the specified states
+        :param int limit: maximum number of results to return per page (1 or more)
+        :param int offset: number of items to skip before starting to collect the result set
+        :return: Tokens
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async_req'):
+            return self.tokens_get_with_http_info(**kwargs)  # noqa: E501
+        else:
+            (data) = self.tokens_get_with_http_info(**kwargs)  # noqa: E501
+            return data
+
+    def tokens_get_with_http_info(self, **kwargs):  # noqa: E501
+        """Get tokens  # noqa: E501
+
+        Get tokens for a user in a project   # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+        >>> thread = api.tokens_get_with_http_info(async_req=True)
+        >>> result = thread.get()
+
+        :param async_req bool
+        :param str token_hash: Token identified by SHA256 hash
+        :param str project_id: Project identified by universally unique identifier
+        :param str expires: Search for tokens with expiry time lesser than the specified expiration time
+        :param list[str] states: Search for Tokens in the specified states
+        :param int limit: maximum number of results to return per page (1 or more)
+        :param int offset: number of items to skip before starting to collect the result set
+        :return: Tokens
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['token_hash', 'project_id', 'expires', 'states', 'limit', 'offset']  # noqa: E501
+        all_params.append('async_req')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method tokens_get" % key
+                )
+            params[key] = val
+        del params['kwargs']
+
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+        if 'token_hash' in params:
+            query_params.append(('token_hash', params['token_hash']))  # noqa: E501
+        if 'project_id' in params:
+            query_params.append(('project_id', params['project_id']))  # noqa: E501
+        if 'expires' in params:
+            query_params.append(('expires', params['expires']))  # noqa: E501
+        if 'states' in params:
+            query_params.append(('states', params['states']))  # noqa: E501
+            collection_formats['states'] = 'multi'  # noqa: E501
+        if 'limit' in params:
+            query_params.append(('limit', params['limit']))  # noqa: E501
+        if 'offset' in params:
+            query_params.append(('offset', params['offset']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/tokens', 'GET',
             path_params,
             query_params,
             header_params,
@@ -234,10 +354,101 @@ class TokensApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def tokens_revoke_post(self, body, **kwargs):  # noqa: E501
-        """Revoke a refresh token for an user  # noqa: E501
+    def tokens_revoke_list_get(self, **kwargs):  # noqa: E501
+        """Get token revoke list i.e. list of revoked identity token hashes  # noqa: E501
 
-        Request to revoke a refresh token for an user   # noqa: E501
+        Get token revoke list i.e. list of revoked identity token hashes for a user in a project   # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+        >>> thread = api.tokens_revoke_list_get(async_req=True)
+        >>> result = thread.get()
+
+        :param async_req bool
+        :param str project_id: Project identified by universally unique identifier
+        :return: RevokeList
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async_req'):
+            return self.tokens_revoke_list_get_with_http_info(**kwargs)  # noqa: E501
+        else:
+            (data) = self.tokens_revoke_list_get_with_http_info(**kwargs)  # noqa: E501
+            return data
+
+    def tokens_revoke_list_get_with_http_info(self, **kwargs):  # noqa: E501
+        """Get token revoke list i.e. list of revoked identity token hashes  # noqa: E501
+
+        Get token revoke list i.e. list of revoked identity token hashes for a user in a project   # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+        >>> thread = api.tokens_revoke_list_get_with_http_info(async_req=True)
+        >>> result = thread.get()
+
+        :param async_req bool
+        :param str project_id: Project identified by universally unique identifier
+        :return: RevokeList
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['project_id']  # noqa: E501
+        all_params.append('async_req')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method tokens_revoke_list_get" % key
+                )
+            params[key] = val
+        del params['kwargs']
+
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+        if 'project_id' in params:
+            query_params.append(('project_id', params['project_id']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/tokens/revoke_list', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='RevokeList',  # noqa: E501
+            auth_settings=auth_settings,
+            async_req=params.get('async_req'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def tokens_revoke_post(self, body, **kwargs):  # noqa: E501
+        """Revoke a token for an user  # noqa: E501
+
+        Request to revoke a token for an user   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
         >>> thread = api.tokens_revoke_post(body, async_req=True)
@@ -257,9 +468,9 @@ class TokensApi(object):
             return data
 
     def tokens_revoke_post_with_http_info(self, body, **kwargs):  # noqa: E501
-        """Revoke a refresh token for an user  # noqa: E501
+        """Revoke a token for an user  # noqa: E501
 
-        Request to revoke a refresh token for an user   # noqa: E501
+        Request to revoke a token for an user   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
         >>> thread = api.tokens_revoke_post_with_http_info(body, async_req=True)
@@ -319,6 +530,204 @@ class TokensApi(object):
 
         return self.api_client.call_api(
             '/tokens/revoke', 'POST',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Status200OkNoContent',  # noqa: E501
+            auth_settings=auth_settings,
+            async_req=params.get('async_req'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def tokens_revokes_post(self, body, **kwargs):  # noqa: E501
+        """Revoke a token  # noqa: E501
+
+        Request to revoke a token   # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+        >>> thread = api.tokens_revokes_post(body, async_req=True)
+        >>> result = thread.get()
+
+        :param async_req bool
+        :param TokenPost body: (required)
+        :return: Status200OkNoContent
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async_req'):
+            return self.tokens_revokes_post_with_http_info(body, **kwargs)  # noqa: E501
+        else:
+            (data) = self.tokens_revokes_post_with_http_info(body, **kwargs)  # noqa: E501
+            return data
+
+    def tokens_revokes_post_with_http_info(self, body, **kwargs):  # noqa: E501
+        """Revoke a token  # noqa: E501
+
+        Request to revoke a token   # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+        >>> thread = api.tokens_revokes_post_with_http_info(body, async_req=True)
+        >>> result = thread.get()
+
+        :param async_req bool
+        :param TokenPost body: (required)
+        :return: Status200OkNoContent
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['body']  # noqa: E501
+        all_params.append('async_req')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method tokens_revokes_post" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'body' is set
+        if ('body' not in params or
+                params['body'] is None):
+            raise ValueError("Missing the required parameter `body` when calling `tokens_revokes_post`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        if 'body' in params:
+            body_params = params['body']
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/tokens/revokes', 'POST',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Status200OkNoContent',  # noqa: E501
+            auth_settings=auth_settings,
+            async_req=params.get('async_req'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def tokens_validate_post(self, body, **kwargs):  # noqa: E501
+        """Validate an identity token issued by Credential Manager  # noqa: E501
+
+        Validate an identity token issued by Credential Manager   # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+        >>> thread = api.tokens_validate_post(body, async_req=True)
+        >>> result = thread.get()
+
+        :param async_req bool
+        :param TokenPost body: (required)
+        :return: Status200OkNoContent
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async_req'):
+            return self.tokens_validate_post_with_http_info(body, **kwargs)  # noqa: E501
+        else:
+            (data) = self.tokens_validate_post_with_http_info(body, **kwargs)  # noqa: E501
+            return data
+
+    def tokens_validate_post_with_http_info(self, body, **kwargs):  # noqa: E501
+        """Validate an identity token issued by Credential Manager  # noqa: E501
+
+        Validate an identity token issued by Credential Manager   # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+        >>> thread = api.tokens_validate_post_with_http_info(body, async_req=True)
+        >>> result = thread.get()
+
+        :param async_req bool
+        :param TokenPost body: (required)
+        :return: Status200OkNoContent
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['body']  # noqa: E501
+        all_params.append('async_req')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method tokens_validate_post" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'body' is set
+        if ('body' not in params or
+                params['body'] is None):
+            raise ValueError("Missing the required parameter `body` when calling `tokens_validate_post`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        if 'body' in params:
+            body_params = params['body']
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/tokens/validate', 'POST',
             path_params,
             query_params,
             header_params,

@@ -34,6 +34,13 @@ class TestTokensApi(unittest.TestCase):
         """
         pass
 
+    def test_tokens_get(self):
+        """Test case for tokens_get
+
+        Get tokens  # noqa: E501
+        """
+        pass
+
     def test_tokens_refresh_post(self):
         """Test case for tokens_refresh_post
 
@@ -41,10 +48,31 @@ class TestTokensApi(unittest.TestCase):
         """
         pass
 
+    def test_tokens_revoke_list_get(self):
+        """Test case for tokens_revoke_list_get
+
+        Get token revoke list i.e. list of revoked identity token hashes  # noqa: E501
+        """
+        pass
+
     def test_tokens_revoke_post(self):
         """Test case for tokens_revoke_post
 
-        Revoke a refresh token for an user  # noqa: E501
+        Revoke a token for an user  # noqa: E501
+        """
+        pass
+
+    def test_tokens_revokes_post(self):
+        """Test case for tokens_revokes_post
+
+        Revoke a token  # noqa: E501
+        """
+        pass
+
+    def test_tokens_validate_post(self):
+        """Test case for tokens_validate_post
+
+        Validate an identity token issued by Credential Manager  # noqa: E501
         """
         pass
 
