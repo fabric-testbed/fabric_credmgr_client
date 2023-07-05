@@ -26,11 +26,12 @@
 import enum
 import json
 from datetime import datetime
-from typing import Tuple, Any
+from typing import Tuple, Any, List, Union
 
 from atomicwrites import atomic_write
 
 from fabric_cm.credmgr import swagger_client
+from fabric_cm.credmgr.swagger_client import Token
 from fabric_cm.credmgr.swagger_client.rest import ApiException as CredMgrException
 
 
@@ -52,15 +53,53 @@ class Status(enum.Enum):
             return str(exception) + ". " + interpretations[self.value]
 
 
+class TokenState(enum.Enum):
+    Nascent = enum.auto()
+    Valid = enum.auto()
+    Refreshed = enum.auto()
+    Revoked = enum.auto()
+    Expired = enum.auto()
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
+
+    @staticmethod
+    def state_from_str(state: str):
+        if state is None:
+            return state
+
+        for t in TokenState:
+            if state == str(t):
+                return t
+
+        return None
+
+    @staticmethod
+    def state_list_to_str_list(states: list):
+        if states is None:
+            return states
+
+        result = []
+        for t in states:
+            result.append(str(t))
+
+        return result
+
+
 class CredmgrProxy:
     """
     Credential Manager Proxy
     """
     ID_TOKEN = "id_token"
     REFRESH_TOKEN = "refresh_token"
-    TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+    TIME_FORMAT = "%Y-%m-%d %H:%M:%S %z"
     CREATED_AT = "created_at"
     ERROR = "error"
+    PROP_AUTHORIZATION = 'Authorization'
+    PROP_BEARER = 'Bearer'
 
     def __init__(self, credmgr_host: str):
         self.host = credmgr_host
@@ -73,6 +112,15 @@ class CredmgrProxy:
             self.tokens_api = swagger_client.TokensApi(api_client=api_instance)
             self.default_api = swagger_client.DefaultApi(api_client=api_instance)
             self.version_api = swagger_client.VersionApi(api_client=api_instance)
+
+    def __set_tokens(self, *, token: str):
+        """
+        Set tokens
+        @param token token
+        """
+        # Set the tokens
+        self.tokens_api.api_client.configuration.api_key[self.PROP_AUTHORIZATION] = token
+        self.tokens_api.api_client.configuration.api_key_prefix[self.PROP_AUTHORIZATION] = self.PROP_BEARER
 
     def refresh(self, project_id: str, scope: str, refresh_token: str,
                 file_name: str = None) -> Tuple[Status, dict]:
@@ -157,3 +205,48 @@ class CredmgrProxy:
             return Status.OK, version
         except CredMgrException as e:
             return Status.FAILURE, e.body
+
+    def get_tokens(self, *, token: str, project_id: str = None, expires: str, states: List[TokenState] = None,
+                   limit: int = 20, offset: int = 0, token_hash: str = None,) -> Tuple[Status, Union[Exception, List[Token]]]:
+        """
+        Return list of tokens issued to a user
+        @return list of tokens
+        """
+        if token is None:
+            return Status.INVALID_ARGUMENTS, CredMgrException(f"Token {token} must be specified")
+
+        try:
+            # Set the tokens
+            self.__set_tokens(token=token)
+
+            if expires is not None:
+                expiry_time = datetime.strptime(expires, self.TIME_FORMAT)
+            else:
+                expiry_time = expires
+
+            slices = self.tokens_api.tokens_get(states=TokenState.state_list_to_str_list(states), limit=limit,
+                                                offset=offset, token_hash=token_hash, project_id=project_id,
+                                                expires=expiry_time)
+
+            return Status.OK, slices.data if slices.data is not None else []
+        except Exception as e:
+            return Status.FAILURE, e
+
+    def get_token_revoke_list(self, *, token: str, project_id: str) -> Tuple[Status, Union[Exception, List[Token]]]:
+        """
+        Return list of revoked tokens for a user
+        @return list of revoked tokens
+        """
+        if token is None or project_id is None:
+            return Status.INVALID_ARGUMENTS, CredMgrException(f"Token {token} and "
+                                                              f"Project Id {project_id} must be specified")
+
+        try:
+            # Set the tokens
+            self.__set_tokens(token=token)
+
+            slices = self.tokens_api.tokens_revoke_list_get(project_id=project_id)
+
+            return Status.OK, slices.data if slices.data is not None else []
+        except Exception as e:
+            return Status.FAILURE, e
