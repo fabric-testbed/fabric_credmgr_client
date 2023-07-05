@@ -155,6 +155,7 @@ class TokensApi(object):
                  If the method is called asynchronously,
                  returns the request thread.
         """
+        kwargs = {key: value for key, value in kwargs.items() if value is not None}
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
             return self.tokens_get_with_http_info(**kwargs)  # noqa: E501
@@ -230,6 +231,8 @@ class TokensApi(object):
 
         # Authentication setting
         auth_settings = []  # noqa: E501
+        if len(self.api_client.configuration.api_key) > 0:
+            auth_settings = ['bearerAuth']  # noqa: E501
 
         return self.api_client.call_api(
             '/tokens', 'GET',
@@ -369,6 +372,7 @@ class TokensApi(object):
                  If the method is called asynchronously,
                  returns the request thread.
         """
+        kwargs = {key: value for key, value in kwargs.items() if value is not None}
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
             return self.tokens_revoke_list_get_with_http_info(**kwargs)  # noqa: E501
@@ -428,6 +432,8 @@ class TokensApi(object):
 
         # Authentication setting
         auth_settings = []  # noqa: E501
+        if len(self.api_client.configuration.api_key) > 0:
+            auth_settings = ['bearerAuth']  # noqa: E501
 
         return self.api_client.call_api(
             '/tokens/revoke_list', 'GET',

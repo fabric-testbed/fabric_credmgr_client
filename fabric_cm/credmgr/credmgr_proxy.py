@@ -25,6 +25,7 @@
 # Author: Komal Thareja (kthare10@renci.org)
 import enum
 import json
+import traceback
 from datetime import datetime
 from typing import Tuple, Any, List, Union
 
@@ -54,11 +55,11 @@ class Status(enum.Enum):
 
 
 class TokenState(enum.Enum):
-    Nascent = enum.auto()
-    Valid = enum.auto()
-    Refreshed = enum.auto()
-    Revoked = enum.auto()
-    Expired = enum.auto()
+    Nascent = enum.auto(),
+    Valid = enum.auto(),
+    Refreshed = enum.auto(),
+    Revoked = enum.auto(),
+    Expired = enum.auto(),
 
     def __str__(self):
         return self.name
@@ -80,7 +81,11 @@ class TokenState(enum.Enum):
     @staticmethod
     def state_list_to_str_list(states: list):
         if states is None:
-            return states
+            result = []
+
+            for t in TokenState:
+                result.append(str(t))
+            return result
 
         result = []
         for t in states:
@@ -206,8 +211,8 @@ class CredmgrProxy:
         except CredMgrException as e:
             return Status.FAILURE, e.body
 
-    def get_tokens(self, *, token: str, project_id: str = None, expires: str, states: List[TokenState] = None,
-                   limit: int = 20, offset: int = 0, token_hash: str = None,) -> Tuple[Status, Union[Exception, List[Token]]]:
+    def tokens(self, *, token: str, project_id: str = None, expires: str = None, states: List[TokenState] = None,
+               limit: int = 200, offset: int = 0, token_hash: str = None,) -> Tuple[Status, Union[Exception, List[Token]]]:
         """
         Return list of tokens issued to a user
         @return list of tokens
@@ -222,17 +227,17 @@ class CredmgrProxy:
             if expires is not None:
                 expiry_time = datetime.strptime(expires, self.TIME_FORMAT)
             else:
-                expiry_time = expires
+                expiry_time = None
 
-            slices = self.tokens_api.tokens_get(states=TokenState.state_list_to_str_list(states), limit=limit,
+            tokens = self.tokens_api.tokens_get(states=TokenState.state_list_to_str_list(states=states), limit=limit,
                                                 offset=offset, token_hash=token_hash, project_id=project_id,
                                                 expires=expiry_time)
 
-            return Status.OK, slices.data if slices.data is not None else []
+            return Status.OK, tokens.data if tokens.data is not None else []
         except Exception as e:
             return Status.FAILURE, e
 
-    def get_token_revoke_list(self, *, token: str, project_id: str) -> Tuple[Status, Union[Exception, List[Token]]]:
+    def token_revoke_list(self, *, token: str, project_id: str) -> Tuple[Status, Union[Exception, List[str]]]:
         """
         Return list of revoked tokens for a user
         @return list of revoked tokens
