@@ -25,7 +25,6 @@
 # Author: Komal Thareja (kthare10@renci.org)
 import enum
 import json
-import traceback
 from datetime import datetime
 from typing import Tuple, Any, List, Union
 
@@ -95,6 +94,17 @@ class TokenState(enum.Enum):
         return result
 
 
+class TokenType(enum.Enum):
+    Identity = enum.auto(),
+    Refresh = enum.auto()
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
+
+
 class CredmgrProxy:
     """
     Credential Manager Proxy
@@ -160,16 +170,32 @@ class CredmgrProxy:
                 tokens_json[self.REFRESH_TOKEN] = refresh_token
             return Status.FAILURE, tokens_json
 
-    def revoke(self, refresh_token: str) -> Tuple[Status, Any]:
+    def revoke(self, refresh_token: str, identity_token: str, token_type: TokenType = TokenType.Refresh) -> Tuple[Status, Any]:
         """
         Revoke token
         @param refresh_token refresh token
+        @param identity_token identity token
+        @param token_type token type
         @returns response
         @raises Exception in case of failure
         """
         try:
-            body = swagger_client.Request(refresh_token)
-            self.tokens_api.tokens_revoke_post(body=body)
+            if identity_token is None:
+                raise CredMgrException(f"Identity Token is required")
+            if refresh_token is None and token_type == TokenType.Refresh:
+                raise CredMgrException(f"Refresh Token is required when revoking a refresh token")
+
+            # Set the tokens
+            self.__set_tokens(token=identity_token)
+
+            body = swagger_client.TokenPost()
+            body.type = str(token_type).lower()
+            if token_type == TokenType.Refresh:
+                body.token = refresh_token
+            else:
+                body.token = identity_token
+
+            self.tokens_api.tokens_revokes_post(body=body)
 
             return Status.OK, None
         except CredMgrException as e:
