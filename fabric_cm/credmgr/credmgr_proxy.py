@@ -32,7 +32,8 @@ from typing import Tuple, Any, List, Union
 from atomicwrites import atomic_write
 
 from fabric_cm.credmgr import swagger_client
-from fabric_cm.credmgr.swagger_client import Token
+from fabric_cm.credmgr.swagger_client import Token, TokenPost
+from fabric_cm.credmgr.swagger_client.models import DecodedToken
 from fabric_cm.credmgr.swagger_client.rest import ApiException as CredMgrException
 
 
@@ -237,20 +238,32 @@ class CredmgrProxy:
         except Exception as e:
             return Status.FAILURE, e
 
-    def token_revoke_list(self, *, token: str, project_id: str) -> Tuple[Status, Union[Exception, List[str]]]:
+    def token_revoke_list(self, *, project_id: str) -> Tuple[Status, Union[Exception, List[str]]]:
         """
         Return list of revoked tokens for a user
         @return list of revoked tokens
         """
-        if token is None or project_id is None:
-            return Status.INVALID_ARGUMENTS, CredMgrException(f"Token {token} and "
-                                                              f"Project Id {project_id} must be specified")
+        try:
+            if project_id is None:
+                return Status.INVALID_ARGUMENTS, CredMgrException(f"Project Id {project_id} must be specified")
+
+            tokens = self.tokens_api.tokens_revoke_list_get(project_id=project_id)
+
+            return Status.OK, tokens.data if tokens.data is not None else []
+        except Exception as e:
+            return Status.FAILURE, e
+
+    def validate(self, *, token: str) -> Tuple[Status, Union[Exception, DecodedToken]]:
+        """
+        Validate a provided token and return decoded token
+        @return status and decoded token
+        """
+        if token is None:
+            return Status.INVALID_ARGUMENTS, CredMgrException(f"Token {token} must be specified")
 
         try:
-            # Set the tokens
-            self.__set_tokens(token=token)
-
-            slices = self.tokens_api.tokens_revoke_list_get(project_id=project_id)
+            token_post = TokenPost(type="identity", token=token)
+            slices = self.tokens_api.tokens_validate_post(token_post)
 
             return Status.OK, slices.data if slices.data is not None else []
         except Exception as e:

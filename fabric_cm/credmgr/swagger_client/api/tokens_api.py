@@ -660,7 +660,7 @@ class TokensApi(object):
 
         :param async_req bool
         :param TokenPost body: (required)
-        :return: Status200OkNoContent
+        :return: DecodedToken
                  If the method is called asynchronously,
                  returns the request thread.
         """
@@ -682,7 +682,7 @@ class TokensApi(object):
 
         :param async_req bool
         :param TokenPost body: (required)
-        :return: Status200OkNoContent
+        :return: DecodedToken
                  If the method is called asynchronously,
                  returns the request thread.
         """
@@ -740,7 +740,7 @@ class TokensApi(object):
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='Status200OkNoContent',  # noqa: E501
+            response_type='DecodedToken',  # noqa: E501
             auth_settings=auth_settings,
             async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),

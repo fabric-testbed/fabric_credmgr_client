@@ -322,7 +322,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **tokens_validate_post**
-> Status200OkNoContent tokens_validate_post(body)
+> DecodedToken tokens_validate_post(body)
 
 Validate an identity token issued by Credential Manager
 
@@ -356,7 +356,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**Status200OkNoContent**](Status200OkNoContent.md)
+[**DecodedToken**](DecodedToken.md)
 
 ### Authorization
 

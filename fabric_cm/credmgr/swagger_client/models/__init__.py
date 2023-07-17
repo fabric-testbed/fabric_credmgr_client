@@ -14,6 +14,7 @@
 from __future__ import absolute_import
 
 # import models into model package
+from fabric_cm.credmgr.swagger_client.models.decoded_token import DecodedToken
 from fabric_cm.credmgr.swagger_client.models.jwks import Jwks
 from fabric_cm.credmgr.swagger_client.models.jwks_keys import JwksKeys
 from fabric_cm.credmgr.swagger_client.models.request import Request
