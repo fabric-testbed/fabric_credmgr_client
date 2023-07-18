@@ -12,6 +12,7 @@ from __future__ import absolute_import
 
 import datetime
 import json
+import logging
 import mimetypes
 from multiprocessing.pool import ThreadPool
 import os
