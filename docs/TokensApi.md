@@ -13,7 +13,7 @@ Method | HTTP request | Description
 [**tokens_validate_post**](TokensApi.md#tokens_validate_post) | **POST** /tokens/validate | Validate an identity token issued by Credential Manager
 
 # **tokens_create_post**
-> Tokens tokens_create_post(project_id=project_id, scope=scope, lifetime=lifetime, comment=comment)
+> Tokens tokens_create_post(project_id=project_id, project_name=project_name, scope=scope, lifetime=lifetime, comment=comment)
 
 Generate tokens for an user
 
@@ -30,13 +30,14 @@ from pprint import pprint
 # create an instance of the API class
 api_instance = TokensApi()
 project_id = 'project_id_example' # str | Project identified by universally unique identifier (optional)
+project_name = 'project_name_example' # str | Project identified by name (optional)
 scope = 'all' # str | Scope for which token is requested (optional) (default to all)
 lifetime = 4 # int | Lifetime of the token requested in hours (optional) (default to 4)
 comment = 'Create Token via GUI' # str | Comment (optional) (default to Create Token via GUI)
 
 try:
     # Generate tokens for an user
-    api_response = api_instance.tokens_create_post(project_id=project_id, scope=scope, lifetime=lifetime, comment=comment)
+    api_response = api_instance.tokens_create_post(project_id=project_id, project_name=project_name, scope=scope, lifetime=lifetime, comment=comment)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling TokensApi->tokens_create_post: %s\n" % e)
@@ -47,6 +48,7 @@ except ApiException as e:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **project_id** | **str**| Project identified by universally unique identifier | [optional] 
+ **project_name** | **str**| Project identified by name | [optional] 
  **scope** | **str**| Scope for which token is requested | [optional] [default to all]
  **lifetime** | **int**| Lifetime of the token requested in hours | [optional] [default to 4]
  **comment** | **str**| Comment | [optional] [default to Create Token via GUI]

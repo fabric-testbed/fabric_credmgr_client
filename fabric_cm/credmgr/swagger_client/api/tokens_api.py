@@ -43,6 +43,7 @@ class TokensApi(object):
 
         :param async_req bool
         :param str project_id: Project identified by universally unique identifier
+        :param str project_name: Project identified by name
         :param str scope: Scope for which token is requested
         :param int lifetime: Lifetime of the token requested in hours
         :param str comment: Comment
@@ -68,6 +69,7 @@ class TokensApi(object):
 
         :param async_req bool
         :param str project_id: Project identified by universally unique identifier
+        :param str project_name: Project identified by name
         :param str scope: Scope for which token is requested
         :param int lifetime: Lifetime of the token requested in hours
         :param str comment: Comment
@@ -75,8 +77,9 @@ class TokensApi(object):
                  If the method is called asynchronously,
                  returns the request thread.
         """
+        kwargs = {key: value for key, value in kwargs.items() if value is not None}
 
-        all_params = ['project_id', 'scope', 'lifetime', 'comment']  # noqa: E501
+        all_params = ['project_id', 'project_name', 'scope', 'lifetime', 'comment']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -99,6 +102,8 @@ class TokensApi(object):
         query_params = []
         if 'project_id' in params:
             query_params.append(('project_id', params['project_id']))  # noqa: E501
+        if 'project_name' in params:
+            query_params.append(('project_name', params['project_name']))  # noqa: E501
         if 'scope' in params:
             query_params.append(('scope', params['scope']))  # noqa: E501
         if 'lifetime' in params:

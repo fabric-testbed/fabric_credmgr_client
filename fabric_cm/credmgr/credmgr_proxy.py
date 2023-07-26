@@ -31,6 +31,7 @@ from typing import Tuple, Any, List, Union
 from atomicwrites import atomic_write
 
 from fabric_cm.credmgr import swagger_client
+from fabric_cm.credmgr.session_helper import SessionHelper
 from fabric_cm.credmgr.swagger_client import Token, TokenPost
 from fabric_cm.credmgr.swagger_client.models import DecodedToken
 from fabric_cm.credmgr.swagger_client.rest import ApiException as CredMgrException
@@ -117,8 +118,12 @@ class CredmgrProxy:
     PROP_AUTHORIZATION = 'Authorization'
     PROP_BEARER = 'Bearer'
 
-    def __init__(self, credmgr_host: str):
+    def __init__(self, credmgr_host: str, cookie_name: str = "fabric-service",
+                 wait_timeout: int = 500, wait_interval: int = 5):
         self.host = credmgr_host
+        self.cookie_name = cookie_name
+        self.wait_timeout = wait_timeout
+        self.wait_interval = wait_interval
         self.tokens_api = None
         if credmgr_host is not None:
             # create an instance of the API class
@@ -137,6 +142,38 @@ class CredmgrProxy:
         # Set the tokens
         self.tokens_api.api_client.configuration.api_key[self.PROP_AUTHORIZATION] = token
         self.tokens_api.api_client.configuration.api_key_prefix[self.PROP_AUTHORIZATION] = self.PROP_BEARER
+
+    def create(self, scope: str = "all", project_id: str = None, project_name: str = None, file_name: str = None,
+               life_time_in_hours: int = 4, comment: str = "Created via API",
+               browser_name: str = "chrome") -> Tuple[Status, Union[dict, Exception]]:
+        """
+        Create token
+        @param project_id Project Id
+        @param project_name Project Name
+        @param scope scope
+        @param file_name File name
+        @param life_time_in_hours Token lifetime in hours
+        @param comment comment associated with the token
+        @param browser_name Browser name; allowed values: chrome, firefox, safari, edge
+        @returns Tuple of Status, token json or Exception
+        @raises Exception in case of failure
+        """
+        try:
+            if project_id is None and project_name is None:
+                raise CredMgrException("Project ID or Project Name must be specified")
+            session = SessionHelper(url=f"https://{self.host}/", cookie_name=self.cookie_name,
+                                    wait_timeout=self.wait_timeout, wait_interval=self.wait_interval)
+            cookie = session.login(browser_name=browser_name)
+            self.tokens_api.api_client.cookie = cookie
+            tokens = self.tokens_api.tokens_create_post(project_id=project_id, project_name=project_name, scope=scope,
+                                                        lifetime=life_time_in_hours, comment=comment)
+            tokens_json = tokens.data[0].to_dict()
+            if file_name is not None:
+                with atomic_write(file_name, overwrite=True) as f:
+                    json.dump(tokens_json, f)
+            return Status.OK, tokens_json
+        except Exception as e:
+            return Status.FAILURE, e
 
     def refresh(self, project_id: str, scope: str, refresh_token: str,
                 file_name: str = None) -> Tuple[Status, dict]:
@@ -170,7 +207,8 @@ class CredmgrProxy:
                 tokens_json[self.REFRESH_TOKEN] = refresh_token
             return Status.FAILURE, tokens_json
 
-    def revoke(self, refresh_token: str, identity_token: str, token_type: TokenType = TokenType.Refresh) -> Tuple[Status, Any]:
+    def revoke(self, refresh_token: str, identity_token: str,
+               token_type: TokenType = TokenType.Refresh) -> Tuple[Status, Any]:
         """
         Revoke token
         @param refresh_token refresh token
@@ -239,7 +277,8 @@ class CredmgrProxy:
             return Status.FAILURE, e.body
 
     def tokens(self, *, token: str, project_id: str = None, expires: str = None, states: List[TokenState] = None,
-               limit: int = 200, offset: int = 0, token_hash: str = None,) -> Tuple[Status, Union[Exception, List[Token]]]:
+               limit: int = 200, offset: int = 0,
+               token_hash: str = None,) -> Tuple[Status, Union[Exception, List[Token]]]:
         """
         Return list of tokens issued to a user
         @return list of tokens

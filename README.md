@@ -96,6 +96,7 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [DecodedToken](docs/DecodedToken.md)
  - [Jwks](docs/Jwks.md)
  - [JwksKeys](docs/JwksKeys.md)
  - [Request](docs/Request.md)
