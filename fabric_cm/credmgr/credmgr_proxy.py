@@ -188,6 +188,8 @@ class CredmgrProxy:
         @raises Exception in case of failure
         """
         try:
+            if project_id is None and project_name is None:
+                raise CredMgrException("Project ID or Project Name must be specified")
             body = swagger_client.Request(refresh_token)
             tokens = self.tokens_api.tokens_refresh_post(body=body, project_id=project_id, project_name=project_name,
                                                          scope=scope)
