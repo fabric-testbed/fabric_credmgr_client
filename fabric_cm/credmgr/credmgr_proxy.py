@@ -211,12 +211,13 @@ class CredmgrProxy:
                 tokens_json[self.REFRESH_TOKEN] = refresh_token
             return Status.FAILURE, tokens_json
 
-    def revoke(self, refresh_token: str, identity_token: str,
+    def revoke(self, identity_token: str, refresh_token: str = None, token_hash: str = None,
                token_type: TokenType = TokenType.Refresh) -> Tuple[Status, Any]:
         """
         Revoke token
         @param refresh_token refresh token
         @param identity_token identity token
+        @param token_hash token hash for the identity token being revoked
         @param token_type token type
         @returns response
         @raises Exception in case of failure
@@ -230,13 +231,12 @@ class CredmgrProxy:
             # Set the tokens
             self.__set_tokens(token=identity_token)
 
-            body = swagger_client.TokenPost()
-            body.type = str(token_type).lower()
             if token_type == TokenType.Refresh:
-                body.token = refresh_token
+                token = refresh_token
             else:
-                body.token = identity_token
+                token = token_hash
 
+            body = swagger_client.TokenPost(type=str(token_type).lower(), token=token)
             self.tokens_api.tokens_revokes_post(body=body)
 
             return Status.OK, None

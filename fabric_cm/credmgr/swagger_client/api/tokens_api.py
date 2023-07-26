@@ -298,6 +298,7 @@ class TokensApi(object):
                  If the method is called asynchronously,
                  returns the request thread.
         """
+        kwargs = {key: value for key, value in kwargs.items() if value is not None}
 
         all_params = ['body', 'project_id', 'project_name', 'scope']  # noqa: E501
         all_params.append('async_req')
@@ -441,8 +442,6 @@ class TokensApi(object):
 
         # Authentication setting
         auth_settings = []  # noqa: E501
-        if len(self.api_client.configuration.api_key) > 0:
-            auth_settings = ['bearerAuth']  # noqa: E501
 
         return self.api_client.call_api(
             '/tokens/revoke_list', 'GET',
@@ -542,6 +541,8 @@ class TokensApi(object):
 
         # Authentication setting
         auth_settings = []  # noqa: E501
+        if len(self.api_client.configuration.api_key) > 0:
+            auth_settings = ['bearerAuth']  # noqa: E501
 
         return self.api_client.call_api(
             '/tokens/revoke', 'POST',
@@ -641,6 +642,8 @@ class TokensApi(object):
 
         # Authentication setting
         auth_settings = []  # noqa: E501
+        if len(self.api_client.configuration.api_key) > 0:
+            auth_settings = ['bearerAuth']  # noqa: E501
 
         return self.api_client.call_api(
             '/tokens/revokes', 'POST',
