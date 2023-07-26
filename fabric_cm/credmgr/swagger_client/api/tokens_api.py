@@ -267,6 +267,7 @@ class TokensApi(object):
         :param async_req bool
         :param Request body: (required)
         :param str project_id: Project identified by universally unique identifier
+        :param str project_name: Project identified by name
         :param str scope: Scope for which token is requested
         :return: Tokens
                  If the method is called asynchronously,
@@ -291,13 +292,14 @@ class TokensApi(object):
         :param async_req bool
         :param Request body: (required)
         :param str project_id: Project identified by universally unique identifier
+        :param str project_name: Project identified by name
         :param str scope: Scope for which token is requested
         :return: Tokens
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['body', 'project_id', 'scope']  # noqa: E501
+        all_params = ['body', 'project_id', 'project_name', 'scope']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -324,6 +326,8 @@ class TokensApi(object):
         query_params = []
         if 'project_id' in params:
             query_params.append(('project_id', params['project_id']))  # noqa: E501
+        if 'project_name' in params:
+            query_params.append(('project_name', params['project_name']))  # noqa: E501
         if 'scope' in params:
             query_params.append(('scope', params['scope']))  # noqa: E501
 

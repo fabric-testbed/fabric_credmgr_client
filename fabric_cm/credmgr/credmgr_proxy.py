@@ -154,7 +154,7 @@ class CredmgrProxy:
         @param file_name File name
         @param life_time_in_hours Token lifetime in hours
         @param comment comment associated with the token
-        @param browser_name Browser name; allowed values: chrome, firefox, safari, edge
+        @param browser_name: Browser name; allowed values: chrome, firefox, safari, edge
         @returns Tuple of Status, token json or Exception
         @raises Exception in case of failure
         """
@@ -175,11 +175,12 @@ class CredmgrProxy:
         except Exception as e:
             return Status.FAILURE, e
 
-    def refresh(self, project_id: str, scope: str, refresh_token: str,
-                file_name: str = None) -> Tuple[Status, dict]:
+    def refresh(self, scope: str, refresh_token: str, file_name: str = None, project_id: str = None,
+                project_name: str = None) -> Tuple[Status, dict]:
         """
         Refresh token
         @param project_id Project Id
+        @param project_name Project Name
         @param scope scope
         @param refresh_token refresh token
         @param file_name File name
@@ -188,7 +189,8 @@ class CredmgrProxy:
         """
         try:
             body = swagger_client.Request(refresh_token)
-            tokens = self.tokens_api.tokens_refresh_post(body=body, project_id=project_id, scope=scope)
+            tokens = self.tokens_api.tokens_refresh_post(body=body, project_id=project_id, project_name=project_name,
+                                                         scope=scope)
 
             tokens_json = tokens.data[0].to_dict()
             if file_name is not None:

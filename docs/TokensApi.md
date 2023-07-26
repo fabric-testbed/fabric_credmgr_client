@@ -127,7 +127,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **tokens_refresh_post**
-> Tokens tokens_refresh_post(body, project_id=project_id, scope=scope)
+> Tokens tokens_refresh_post(body, project_id=project_id, project_name=project_name, scope=scope)
 
 Refresh tokens for an user
 
@@ -145,11 +145,12 @@ from pprint import pprint
 api_instance = TokensApi()
 body = swagger_client.Request() # Request | 
 project_id = 'project_id_example' # str | Project identified by universally unique identifier (optional)
+project_name = 'project_name_example' # str | Project identified by name (optional)
 scope = 'all' # str | Scope for which token is requested (optional) (default to all)
 
 try:
     # Refresh tokens for an user
-    api_response = api_instance.tokens_refresh_post(body, project_id=project_id, scope=scope)
+    api_response = api_instance.tokens_refresh_post(body, project_id=project_id, project_name=project_name, scope=scope)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling TokensApi->tokens_refresh_post: %s\n" % e)
@@ -161,6 +162,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **body** | [**Request**](Request.md)|  | 
  **project_id** | **str**| Project identified by universally unique identifier | [optional] 
+ **project_name** | **str**| Project identified by name | [optional] 
  **scope** | **str**| Scope for which token is requested | [optional] [default to all]
 
 ### Return type
