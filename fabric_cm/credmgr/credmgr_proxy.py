@@ -58,7 +58,7 @@ class CredmgrProxy:
     """
     ID_TOKEN = "id_token"
     REFRESH_TOKEN = "refresh_token"
-    TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+    TIME_FORMAT = "%Y-%m-%d %H:%M:%S %z"
     CREATED_AT = "created_at"
     ERROR = "error"
 
