@@ -26,11 +26,14 @@
 import enum
 import json
 from datetime import datetime
-from typing import Tuple, Any
+from typing import Tuple, Any, List, Union
 
 from atomicwrites import atomic_write
 
 from fabric_cm.credmgr import swagger_client
+from fabric_cm.credmgr.session_helper import SessionHelper
+from fabric_cm.credmgr.swagger_client import Token, TokenPost
+from fabric_cm.credmgr.swagger_client.models import DecodedToken
 from fabric_cm.credmgr.swagger_client.rest import ApiException as CredMgrException
 
 
@@ -52,6 +55,57 @@ class Status(enum.Enum):
             return str(exception) + ". " + interpretations[self.value]
 
 
+class TokenState(enum.Enum):
+    Nascent = enum.auto(),
+    Valid = enum.auto(),
+    Refreshed = enum.auto(),
+    Revoked = enum.auto(),
+    Expired = enum.auto(),
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
+
+    @staticmethod
+    def state_from_str(state: str):
+        if state is None:
+            return state
+
+        for t in TokenState:
+            if state == str(t):
+                return t
+
+        return None
+
+    @staticmethod
+    def state_list_to_str_list(states: list):
+        if states is None:
+            result = []
+
+            for t in TokenState:
+                result.append(str(t))
+            return result
+
+        result = []
+        for t in states:
+            result.append(str(t))
+
+        return result
+
+
+class TokenType(enum.Enum):
+    Identity = enum.auto(),
+    Refresh = enum.auto()
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
+
+
 class CredmgrProxy:
     """
     Credential Manager Proxy
@@ -61,9 +115,15 @@ class CredmgrProxy:
     TIME_FORMAT = "%Y-%m-%d %H:%M:%S %z"
     CREATED_AT = "created_at"
     ERROR = "error"
+    PROP_AUTHORIZATION = 'Authorization'
+    PROP_BEARER = 'Bearer'
 
-    def __init__(self, credmgr_host: str):
+    def __init__(self, credmgr_host: str, cookie_name: str = "fabric-service",
+                 wait_timeout: int = 500, wait_interval: int = 5):
         self.host = credmgr_host
+        self.cookie_name = cookie_name
+        self.wait_timeout = wait_timeout
+        self.wait_interval = wait_interval
         self.tokens_api = None
         if credmgr_host is not None:
             # create an instance of the API class
@@ -74,11 +134,53 @@ class CredmgrProxy:
             self.default_api = swagger_client.DefaultApi(api_client=api_instance)
             self.version_api = swagger_client.VersionApi(api_client=api_instance)
 
-    def refresh(self, project_id: str, scope: str, refresh_token: str,
-                file_name: str = None) -> Tuple[Status, dict]:
+    def __set_tokens(self, *, token: str):
+        """
+        Set tokens
+        @param token token
+        """
+        # Set the tokens
+        self.tokens_api.api_client.configuration.api_key[self.PROP_AUTHORIZATION] = token
+        self.tokens_api.api_client.configuration.api_key_prefix[self.PROP_AUTHORIZATION] = self.PROP_BEARER
+
+    def create(self, scope: str = "all", project_id: str = None, project_name: str = None, file_name: str = None,
+               life_time_in_hours: int = 4, comment: str = "Created via API",
+               browser_name: str = "chrome") -> Tuple[Status, Union[dict, Exception]]:
+        """
+        Create token
+        @param project_id Project Id
+        @param project_name Project Name
+        @param scope scope
+        @param file_name File name
+        @param life_time_in_hours Token lifetime in hours
+        @param comment comment associated with the token
+        @param browser_name: Browser name; allowed values: chrome, firefox, safari, edge
+        @returns Tuple of Status, token json or Exception
+        @raises Exception in case of failure
+        """
+        try:
+            if project_id is None and project_name is None:
+                raise CredMgrException("Project ID or Project Name must be specified")
+            session = SessionHelper(url=f"https://{self.host}/", cookie_name=self.cookie_name,
+                                    wait_timeout=self.wait_timeout, wait_interval=self.wait_interval)
+            cookie = session.login(browser_name=browser_name)
+            self.tokens_api.api_client.cookie = cookie
+            tokens = self.tokens_api.tokens_create_post(project_id=project_id, project_name=project_name, scope=scope,
+                                                        lifetime=life_time_in_hours, comment=comment)
+            tokens_json = tokens.data[0].to_dict()
+            if file_name is not None:
+                with atomic_write(file_name, overwrite=True) as f:
+                    json.dump(tokens_json, f)
+            return Status.OK, tokens_json
+        except Exception as e:
+            return Status.FAILURE, e
+
+    def refresh(self, scope: str, refresh_token: str, file_name: str = None, project_id: str = None,
+                project_name: str = None) -> Tuple[Status, dict]:
         """
         Refresh token
         @param project_id Project Id
+        @param project_name Project Name
         @param scope scope
         @param refresh_token refresh token
         @param file_name File name
@@ -86,8 +188,11 @@ class CredmgrProxy:
         @raises Exception in case of failure
         """
         try:
+            if project_id is None and project_name is None:
+                raise CredMgrException("Project ID or Project Name must be specified")
             body = swagger_client.Request(refresh_token)
-            tokens = self.tokens_api.tokens_refresh_post(body=body, project_id=project_id, scope=scope)
+            tokens = self.tokens_api.tokens_refresh_post(body=body, project_id=project_id, project_name=project_name,
+                                                         scope=scope)
 
             tokens_json = tokens.data[0].to_dict()
             if file_name is not None:
@@ -106,16 +211,33 @@ class CredmgrProxy:
                 tokens_json[self.REFRESH_TOKEN] = refresh_token
             return Status.FAILURE, tokens_json
 
-    def revoke(self, refresh_token: str) -> Tuple[Status, Any]:
+    def revoke(self, identity_token: str, refresh_token: str = None, token_hash: str = None,
+               token_type: TokenType = TokenType.Refresh) -> Tuple[Status, Any]:
         """
         Revoke token
         @param refresh_token refresh token
+        @param identity_token identity token
+        @param token_hash token hash for the identity token being revoked
+        @param token_type token type
         @returns response
         @raises Exception in case of failure
         """
         try:
-            body = swagger_client.Request(refresh_token)
-            self.tokens_api.tokens_revoke_post(body=body)
+            if identity_token is None:
+                raise CredMgrException(f"Identity Token is required")
+            if refresh_token is None and token_type == TokenType.Refresh:
+                raise CredMgrException(f"Refresh Token is required when revoking a refresh token")
+
+            # Set the tokens
+            self.__set_tokens(token=identity_token)
+
+            if token_type == TokenType.Refresh:
+                token = refresh_token
+            else:
+                token = token_hash
+
+            body = swagger_client.TokenPost(type=str(token_type).lower(), token=token)
+            self.tokens_api.tokens_revokes_post(body=body)
 
             return Status.OK, None
         except CredMgrException as e:
@@ -157,3 +279,61 @@ class CredmgrProxy:
             return Status.OK, version
         except CredMgrException as e:
             return Status.FAILURE, e.body
+
+    def tokens(self, *, token: str, project_id: str = None, expires: str = None, states: List[TokenState] = None,
+               limit: int = 200, offset: int = 0,
+               token_hash: str = None,) -> Tuple[Status, Union[Exception, List[Token]]]:
+        """
+        Return list of tokens issued to a user
+        @return list of tokens
+        """
+        if token is None:
+            return Status.INVALID_ARGUMENTS, CredMgrException(f"Token {token} must be specified")
+
+        try:
+            # Set the tokens
+            self.__set_tokens(token=token)
+
+            if expires is not None:
+                expiry_time = datetime.strptime(expires, self.TIME_FORMAT)
+            else:
+                expiry_time = None
+
+            tokens = self.tokens_api.tokens_get(states=TokenState.state_list_to_str_list(states=states), limit=limit,
+                                                offset=offset, token_hash=token_hash, project_id=project_id,
+                                                expires=expiry_time)
+
+            return Status.OK, tokens.data if tokens.data is not None else []
+        except Exception as e:
+            return Status.FAILURE, e
+
+    def token_revoke_list(self, *, project_id: str) -> Tuple[Status, Union[Exception, List[str]]]:
+        """
+        Return list of revoked tokens for a user
+        @return list of revoked tokens
+        """
+        try:
+            if project_id is None:
+                return Status.INVALID_ARGUMENTS, CredMgrException(f"Project Id {project_id} must be specified")
+
+            tokens = self.tokens_api.tokens_revoke_list_get(project_id=project_id)
+
+            return Status.OK, tokens.data if tokens.data is not None else []
+        except Exception as e:
+            return Status.FAILURE, e
+
+    def validate(self, *, token: str) -> Tuple[Status, Union[Exception, DecodedToken]]:
+        """
+        Validate a provided token and return decoded token
+        @return status and decoded token
+        """
+        if token is None:
+            return Status.INVALID_ARGUMENTS, CredMgrException(f"Token {token} must be specified")
+
+        try:
+            token_post = TokenPost(type="identity", token=token)
+            slices = self.tokens_api.tokens_validate_post(token_post)
+
+            return Status.OK, slices.data if slices.data is not None else []
+        except Exception as e:
+            return Status.FAILURE, e

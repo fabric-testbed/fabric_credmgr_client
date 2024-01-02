@@ -21,7 +21,8 @@ dependencies = [
                 "six >= 1.10",
                 "python_dateutil >= 2.5.3",
                 "urllib3 >= 1.15.1",
-                "atomicwrites"
+                "atomicwrites",
+                "selenium"
                 ]
 
 [project.optional-dependencies]
